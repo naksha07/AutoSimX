@@ -1,8 +1,9 @@
 """
 Virtual CAN Bus
 """
-from logger.can_logger import log_frame
+
 from communication.can_frame import CANFrame
+from logger.can_logger import log_frame
 
 
 class CANBus:
@@ -14,15 +15,12 @@ class CANBus:
         self.ecus = {}
 
     def register_ecu(self, ecu):
-        """
-        Register an ECU on the CAN bus.
-        """
         self.ecus[ecu.name] = ecu
         ecu.bus = self
 
         print(f"[BUS] {ecu.name} connected.")
 
-    def transmit(self, frame):
+    def transmit(self, frame: CANFrame):
 
         print("\n" + "=" * 60)
         print("[CAN BUS] Broadcasting Frame")
@@ -30,11 +28,10 @@ class CANBus:
 
         frame.display()
 
+        # Save the frame to logs/can.log
         log_frame(frame)
 
-        from logger.can_logger import log
-        log(frame)
-
+        # Broadcast to every ECU except sender
         for ecu in self.ecus.values():
             if ecu.name != frame.sender:
                 ecu.receive(frame)

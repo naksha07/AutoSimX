@@ -1,5 +1,8 @@
 from ecu.ecu import ECU
+
 from communication.message_ids import ENGINE_STATUS
+
+from models.global_state import vehicle
 
 
 class BodyECU(ECU):
@@ -7,9 +10,6 @@ class BodyECU(ECU):
     def __init__(self):
 
         super().__init__("Body ECU")
-
-        self.headlights = False
-        self.door_locked = True
 
     def receive(self, frame):
 
@@ -20,9 +20,9 @@ class BodyECU(ECU):
 
         speed = frame.data[0]
 
-        self.headlights = speed > 60
+        vehicle.headlights = speed > 60
 
         print(
             f"[Body ECU] Headlights : "
-            f"{'ON' if self.headlights else 'OFF'}"
+            f"{'ON' if vehicle.headlights else 'OFF'}"
         )

@@ -22,17 +22,19 @@ class CANBus:
 
         print(f"[BUS] {ecu.name} connected.")
 
-    def transmit(self, frame: CANFrame):
+    def transmit(self, frame):
+
+        print(">>> NEW CAN BUS IS RUNNING <<<")
 
         print("\n" + "=" * 60)
-        print("[CAN BUS] Transmitting Frame")
+        print("[CAN BUS] Broadcasting Frame")
         print("=" * 60)
 
         frame.display()
 
-        receiver = self.ecus.get(frame.receiver)
+        from logger.can_logger import log
+        log(frame)
 
-        if receiver:
-            receiver.receive(frame)
-        else:
-            print(f"[BUS] Receiver '{frame.receiver}' not found.")
+        for ecu in self.ecus.values():
+            if ecu.name != frame.sender:
+                ecu.receive(frame)

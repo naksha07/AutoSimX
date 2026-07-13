@@ -10,6 +10,6 @@ class GatewayECU(ECU):
     def receive(self, frame):
 
         print(
-            f"[Gateway] Logged Frame -> "
-            f"{hex(frame.can_id)} from {frame.sender}"
+            f"[Gateway] {frame.sender} -> "
+            f"{hex(frame.can_id)} | DATA = {frame.data}"
         )

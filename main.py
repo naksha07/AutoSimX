@@ -25,7 +25,7 @@ def main():
     bus.register_ecu(body)
     bus.register_ecu(gateway)
 
-    engine.update_engine(80, 2500)
+    engine.simulate_drive()
 
 
 if __name__ == "__main__":

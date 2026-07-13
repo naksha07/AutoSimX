@@ -8,15 +8,14 @@ class ClusterECU(ECU):
         super().__init__("Cluster ECU")
 
     def receive(self, frame):
-
-        print("\n===== Instrument Cluster =====")
-
+        if frame.can_id != 0x101:
+            return
         speed = frame.data[0]
-
         rpm = frame.data[1] * 100
-
-        print(f"Vehicle Speed : {speed} km/h")
-
-        print(f"Engine RPM    : {rpm}")
-
+        
+        print("\n==============================")
+        print(" INSTRUMENT CLUSTER ")
+        print("==============================")
+        print(f" Speed : {speed:3} km/h")
+        print(f" RPM   : {rpm}")
         print("==============================")

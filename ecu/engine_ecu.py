@@ -1,26 +1,44 @@
 from ecu.ecu import ECU
 from communication.can_frame import CANFrame
+import time
 
 
 class EngineECU(ECU):
 
     def __init__(self):
-
         super().__init__("Engine ECU")
 
         self.speed = 0
-        self.rpm = 0
+        self.rpm = 800
 
-    def update_engine(self, speed, rpm):
+    def simulate_drive(self):
 
-        self.speed = speed
-        self.rpm = rpm
+        # Accelerate
+        for speed in range(0, 101, 20):
 
-        frame = CANFrame(
-            can_id=0x101,
-            sender=self.name,
-            receiver="Cluster ECU",
-            data=[speed, rpm // 100]
-        )
+            rpm = 800 + speed * 25
 
-        self.send(frame)
+            frame = CANFrame(
+                can_id=0x101,
+                sender=self.name,
+                data=[speed, rpm // 100]
+            )
+
+            self.send(frame)
+
+            time.sleep(1)
+
+        # Decelerate
+        for speed in range(80, -1, -20):
+
+            rpm = 800 + speed * 25
+
+            frame = CANFrame(
+                can_id=0x101,
+                sender=self.name,
+                data=[speed, rpm // 100]
+            )
+
+            self.send(frame)
+
+            time.sleep(1)

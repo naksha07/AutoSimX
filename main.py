@@ -4,30 +4,28 @@ Virtual AUTOSAR ECU Communication Simulator
 """
 
 from communication.can_bus import CANBus
-from communication.can_frame import CANFrame
-from ecu.ecu import ECU
+
+from ecu.engine_ecu import EngineECU
+from ecu.cluster_ecu import ClusterECU
+from ecu.body_ecu import BodyECU
+from ecu.gateway_ecu import GatewayECU
 
 
 def main():
 
-    can_bus = CANBus()
+    bus = CANBus()
 
-    engine = ECU("Engine ECU")
-    body = ECU("Body ECU")
-    cluster = ECU("Cluster ECU")
+    engine = EngineECU()
+    cluster = ClusterECU()
+    body = BodyECU()
+    gateway = GatewayECU()
 
-    can_bus.register_ecu(engine)
-    can_bus.register_ecu(body)
-    can_bus.register_ecu(cluster)
+    bus.register_ecu(engine)
+    bus.register_ecu(cluster)
+    bus.register_ecu(body)
+    bus.register_ecu(gateway)
 
-    frame = CANFrame(
-        can_id=0x100,
-        sender="Engine ECU",
-        receiver="Body ECU",
-        data=[1]
-    )
-
-    engine.send(frame)
+    engine.update_engine(80, 2500)
 
 
 if __name__ == "__main__":

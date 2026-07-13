@@ -1,7 +1,7 @@
 """
 Virtual CAN Bus
 """
-
+from logger.can_logger import log_frame
 from communication.can_frame import CANFrame
 
 
@@ -24,13 +24,13 @@ class CANBus:
 
     def transmit(self, frame):
 
-        print(">>> NEW CAN BUS IS RUNNING <<<")
-
         print("\n" + "=" * 60)
         print("[CAN BUS] Broadcasting Frame")
         print("=" * 60)
 
         frame.display()
+
+        log_frame(frame)
 
         from logger.can_logger import log
         log(frame)

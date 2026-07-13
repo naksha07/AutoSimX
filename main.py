@@ -1,15 +1,28 @@
 """
 AutoSimX
 Virtual AUTOSAR ECU Communication Simulator
-
-Author: Nakshathraa N B
 """
 
+from communication.can_frame import CANFrame
+from ecu.ecu import ECU
+
+
 def main():
-    print("=" * 50)
-    print("AutoSimX")
-    print("Virtual AUTOSAR ECU Communication Simulator")
-    print("=" * 50)
+
+    engine = ECU("Engine ECU")
+
+    body = ECU("Body ECU")
+
+    frame = CANFrame(
+        can_id=0x100,
+        sender="Engine ECU",
+        receiver="Body ECU",
+        data=[1]
+    )
+
+    engine.send(frame)
+
+    body.receive(frame)
 
 
 if __name__ == "__main__":

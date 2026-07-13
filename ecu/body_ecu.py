@@ -1,4 +1,5 @@
 from ecu.ecu import ECU
+from communication.message_ids import ENGINE_STATUS
 
 
 class BodyECU(ECU):
@@ -11,14 +12,17 @@ class BodyECU(ECU):
         self.door_locked = True
 
     def receive(self, frame):
-        
-        if frame.can_id == 0x101:
-            speed = frame.data[0]
-        
-            self.headlights = speed > 60
-                
-                
-            print(
-                f"[Body ECU] Headlights: "
-                f"{'ON' if self.headlights else 'OFF'}"
-            )
+
+        self.frames_received += 1
+
+        if frame.can_id != ENGINE_STATUS:
+            return
+
+        speed = frame.data[0]
+
+        self.headlights = speed > 60
+
+        print(
+            f"[Body ECU] Headlights : "
+            f"{'ON' if self.headlights else 'OFF'}"
+        )

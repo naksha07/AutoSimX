@@ -35,6 +35,11 @@ def main():
     # Add ECU Tasks
     scheduler.add_task(engine.simulate_drive)
 
+    scheduler.add_task(engine.heartbeat)
+    scheduler.add_task(body.heartbeat)
+    scheduler.add_task(cluster.heartbeat)
+    scheduler.add_task(gateway.heartbeat)
+
     # Start all tasks
     scheduler.start()
 

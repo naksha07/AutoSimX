@@ -6,25 +6,23 @@ from communication.can_frame import CANFrame
 
 
 class ECU:
-    """
-    Generic ECU.
-    """
 
-    def __init__(self, name: str):
+    def __init__(self, name):
+
         self.name = name
+        self.bus = None
 
     def send(self, frame: CANFrame):
-        """
-        Send CAN Frame.
-        """
 
-        print(f"\n{self.name} transmitting...")
-        frame.display()
+        print(f"\n[{self.name}] Sending Frame...")
+
+        if self.bus:
+            self.bus.transmit(frame)
+        else:
+            print("No CAN Bus Connected!")
 
     def receive(self, frame: CANFrame):
-        """
-        Receive CAN Frame.
-        """
 
-        print(f"\n{self.name} received a message.")
+        print(f"\n[{self.name}] Message Received!")
+
         frame.display()

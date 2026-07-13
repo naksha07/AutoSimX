@@ -28,13 +28,11 @@ class CANFrame:
     def display(self):
         """Print CAN Frame information."""
 
-        print("=" * 45)
-        print("CAN FRAME")
-        print("=" * 45)
-        print(f"Time      : {self.timestamp}")
+        print("-" * 50)
+        print(f"Time      : {self.timestamp.strftime('%H:%M:%S.%f')[:-3]}")
         print(f"CAN ID    : {hex(self.can_id)}")
         print(f"Sender    : {self.sender}")
         print(f"Receiver  : {self.receiver}")
         print(f"DLC       : {self.dlc}")
-        print(f"Data      : {self.data}")
-        print("=" * 45)
+        print(f"Data      : {' '.join(f'{x:02X}' for x in self.data)}")
+        print("-" * 50)

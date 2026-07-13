@@ -3,15 +3,22 @@ AutoSimX
 Virtual AUTOSAR ECU Communication Simulator
 """
 
+from communication.can_bus import CANBus
 from communication.can_frame import CANFrame
 from ecu.ecu import ECU
 
 
 def main():
 
-    engine = ECU("Engine ECU")
+    can_bus = CANBus()
 
+    engine = ECU("Engine ECU")
     body = ECU("Body ECU")
+    cluster = ECU("Cluster ECU")
+
+    can_bus.register_ecu(engine)
+    can_bus.register_ecu(body)
+    can_bus.register_ecu(cluster)
 
     frame = CANFrame(
         can_id=0x100,
@@ -21,8 +28,6 @@ def main():
     )
 
     engine.send(frame)
-
-    body.receive(frame)
 
 
 if __name__ == "__main__":

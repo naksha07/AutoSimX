@@ -1,19 +1,30 @@
 # Python
+
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
 # Virtual Environment
-.venv/
 
-# VS Code
-.vscode/
+.venv/
+venv/
 
 # Logs
-logs/
 
-# Testing
-.pytest_cache/
+logs/*.csv
+logs/*.txt
+
+# IDE
+
+.vscode/
+.idea/
 
 # OS
-.DS_Store
+
 Thumbs.db
+.DS_Store
+
+# Qt
+
+*.qmlc

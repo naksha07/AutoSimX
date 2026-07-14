@@ -8,16 +8,16 @@ from collections import deque
 class CANHistory:
 
     def __init__(self):
-
-        self.frames = deque(maxlen=500)
+        self.frames = []
 
     def add(self, frame):
-
         self.frames.append(frame)
 
-    def get(self):
+        if len(self.frames) > 200:
+            self.frames.pop(0)
 
-        return list(self.frames)
+    def get(self):
+        return self.frames
 
 
 history = CANHistory()

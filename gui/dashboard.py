@@ -1,7 +1,6 @@
 """
 AutoSimX Dashboard
 """
-
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,
@@ -16,8 +15,10 @@ from PySide6.QtWidgets import (
 )
 
 from PySide6.QtCore import QTimer
+from datetime import datetime
 
 from models.global_state import vehicle
+from models.ecu_status import ecu_status
 from models.can_history import history
 
 from communication.can_frame import CANFrame
@@ -31,7 +32,6 @@ from communication.message_ids import (
     RIGHT_INDICATOR,
     HAZARD,
 )
-
 
 class Dashboard(QWidget):
 
@@ -76,6 +76,33 @@ class Dashboard(QWidget):
         vehicle_box.setLayout(grid)
 
         # ==========================================================
+        # ECU Health
+        # ==========================================================
+
+        ecu_box = QGroupBox("ECU Health")
+
+        ecu_layout = QGridLayout()
+
+        self.engine_led = QLabel()
+        self.cluster_led = QLabel()
+        self.body_led = QLabel()
+        self.gateway_led = QLabel()
+
+        ecu_layout.addWidget(QLabel("Engine ECU"), 0, 0)
+        ecu_layout.addWidget(self.engine_led, 0, 1)
+
+        ecu_layout.addWidget(QLabel("Cluster ECU"), 1, 0)
+        ecu_layout.addWidget(self.cluster_led, 1, 1)
+
+        ecu_layout.addWidget(QLabel("Body ECU"), 2, 0)
+        ecu_layout.addWidget(self.body_led, 2, 1)
+
+        ecu_layout.addWidget(QLabel("Gateway ECU"), 3, 0)
+        ecu_layout.addWidget(self.gateway_led, 3, 1)
+
+        ecu_box.setLayout(ecu_layout)
+
+        # ==========================================================
         # CAN Monitor
         # ==========================================================
 
@@ -114,7 +141,6 @@ class Dashboard(QWidget):
         # ==========================================================
 
         self.log = QTextEdit()
-
         self.log.setReadOnly(True)
 
         # ==========================================================
@@ -122,13 +148,11 @@ class Dashboard(QWidget):
         # ==========================================================
 
         self.lock = QPushButton("Lock Doors")
-
         self.unlock = QPushButton("Unlock Doors")
 
         buttons = QHBoxLayout()
 
         buttons.addWidget(self.lock)
-
         buttons.addWidget(self.unlock)
 
         # ==========================================================
@@ -138,11 +162,9 @@ class Dashboard(QWidget):
         layout = QVBoxLayout()
 
         layout.addWidget(vehicle_box)
-
+        layout.addWidget(ecu_box)
         layout.addWidget(can_box)
-
         layout.addWidget(self.log)
-
         layout.addLayout(buttons)
 
         self.setLayout(layout)
@@ -187,7 +209,33 @@ class Dashboard(QWidget):
         self.bus.transmit(frame)
 
     # ==============================================================
-    # Update CAN Monitor
+    # ECU Health
+    # ==============================================================
+
+    def update_ecu_health(self):
+
+        now = datetime.now()
+
+        for ecu, last in ecu_status.get_status().items():
+
+            delta = (now - last).total_seconds()
+
+            state = "🟢 ONLINE" if delta < 2 else "🔴 OFFLINE"
+
+            if ecu == "Engine ECU":
+                self.engine_led.setText(state)
+
+            elif ecu == "Cluster ECU":
+                self.cluster_led.setText(state)
+
+            elif ecu == "Body ECU":
+                self.body_led.setText(state)
+
+            elif ecu == "Gateway ECU":
+                self.gateway_led.setText(state)
+
+    # ==============================================================
+    # CAN Monitor
     # ==============================================================
 
     def update_can_table(self):
@@ -258,4 +306,5 @@ class Dashboard(QWidget):
             else "UNLOCKED"
         )
 
+        self.update_ecu_health()
         self.update_can_table()

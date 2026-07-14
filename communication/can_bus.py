@@ -4,6 +4,7 @@ Virtual CAN Bus
 
 from communication.can_frame import CANFrame
 from logger.can_logger import log_frame
+from models.can_history import history
 
 
 class CANBus:
@@ -27,9 +28,15 @@ class CANBus:
         print("=" * 60)
 
         frame.display()
+        
+        history.add(frame)
 
         # Save the frame to logs/can.log
         log_frame(frame)
+
+        from models.ecu_status import ecu_status
+        
+        ecu_status.heartbeat(frame.sender)
 
         # Broadcast to every ECU except sender
         for ecu in self.ecus.values():

@@ -4,6 +4,7 @@ Virtual CAN Bus
 
 from communication.can_frame import CANFrame
 from logger.can_logger import log_frame
+from logger.csv_logger import csv_logger
 from models.can_history import history
 
 
@@ -30,6 +31,8 @@ class CANBus:
         frame.display()
         
         history.add(frame)
+
+        csv_logger.log(frame)
 
         # Save the frame to logs/can.log
         log_frame(frame)

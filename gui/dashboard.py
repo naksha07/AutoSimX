@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QTableWidget,
     QTableWidgetItem,
+    QProgressBar,
 )
 
 from PySide6.QtCore import QTimer
@@ -58,20 +59,41 @@ class Dashboard(QWidget):
 
         grid = QGridLayout()
 
-        self.speed = QLabel()
-        self.rpm = QLabel()
-        self.fuel = QLabel()
+        self.speed = QLabel("0 km/h")
+        self.rpm = QLabel("800")
+        self.fuel = QLabel("100 %")
+
+        font = self.speed.font()
+        font.setPointSize(22)
+        font.setBold(True)
+
+        self.speed.setFont(font)
+        self.rpm.setFont(font)
+        self.fuel.setFont(font)
+
         self.headlights = QLabel()
         self.doors = QLabel()
 
+        self.speed_bar = QProgressBar()
+        self.speed_bar.setMaximum(240)
+
+        self.rpm_bar = QProgressBar()
+        self.rpm_bar.setMaximum(8000)
+
+        self.fuel_bar = QProgressBar()
+        self.fuel_bar.setMaximum(100)
+
         grid.addWidget(QLabel("Speed"), 0, 0)
         grid.addWidget(self.speed, 0, 1)
+        grid.addWidget(self.speed_bar, 0, 2)
 
         grid.addWidget(QLabel("RPM"), 1, 0)
         grid.addWidget(self.rpm, 1, 1)
+        grid.addWidget(self.rpm_bar, 1, 2)
 
         grid.addWidget(QLabel("Fuel"), 2, 0)
         grid.addWidget(self.fuel, 2, 1)
+        grid.addWidget(self.fuel_bar, 2, 2)
 
         grid.addWidget(QLabel("Headlights"), 3, 0)
         grid.addWidget(self.headlights, 3, 1)
@@ -240,6 +262,53 @@ class Dashboard(QWidget):
 
         self.timer.start(100)
 
+        # ==========================================================
+        # Stylesheet - Make headings larger and clearly visible
+        # ==========================================================
+
+        self.setStyleSheet("""
+QWidget{
+    background:#202124;
+    color:white;
+    font-size:12pt;
+}
+
+QGroupBox{
+    border:2px solid #4CAF50;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+QGroupBox::title {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #4CAF50;
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 5px 0 5px;
+}
+
+QProgressBar{
+    border:1px solid gray;
+    text-align:center;
+    height:20px;
+}
+
+QProgressBar::chunk{
+    background:#00C853;
+}
+
+QPushButton{
+    background:#1976D2;
+    color:white;
+    padding:8px;
+}
+
+QPushButton:hover{
+    background:#1565C0;
+}
+""")
+
     # ==============================================================
     # Send CAN Command
     # ==============================================================
@@ -376,10 +445,13 @@ class Dashboard(QWidget):
     def refresh_dashboard(self):
 
         self.speed.setText(f"{vehicle.speed} km/h")
+        self.speed_bar.setValue(vehicle.speed)
 
         self.rpm.setText(str(vehicle.rpm))
+        self.rpm_bar.setValue(vehicle.rpm)
 
         self.fuel.setText(f"{vehicle.fuel}%")
+        self.fuel_bar.setValue(vehicle.fuel)
 
         self.headlights.setText(
             "ON" if vehicle.headlights else "OFF"

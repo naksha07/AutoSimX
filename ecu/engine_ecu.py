@@ -16,11 +16,14 @@ from diagnostics.dtc_codes import (
     ENGINE_OVERHEAT,
 )
 
+from autosar.engine_component import EngineComponent
+
 
 class EngineECU(ECU):
 
     def __init__(self):
         super().__init__("Engine ECU")
+        self.swc = EngineComponent()
 
     def simulate_drive(self):
 
@@ -41,6 +44,8 @@ class EngineECU(ECU):
 
             if vehicle.engine_temperature >= 120:
                 dtc_manager.add(ENGINE_OVERHEAT)
+
+            self.swc.update(speed, rpm)
 
             frame = CANFrame(
                 can_id=ENGINE_STATUS,
@@ -68,6 +73,8 @@ class EngineECU(ECU):
 
             if vehicle.engine_temperature >= 120:
                 dtc_manager.add(ENGINE_OVERHEAT)
+
+            self.swc.update(speed, rpm)
 
             frame = CANFrame(
                 can_id=ENGINE_STATUS,

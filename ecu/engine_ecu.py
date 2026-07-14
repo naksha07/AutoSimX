@@ -1,16 +1,26 @@
+"""
+Engine ECU
+Simulates engine speed and RPM and broadcasts Engine Status over CAN.
+"""
+
+import time
+
 from ecu.ecu import ECU
 from communication.can_frame import CANFrame
-import time
 from communication.message_ids import ENGINE_STATUS
+from models.global_state import vehicle
+
+from models.dtc_manager import dtc_manager
+from diagnostics.dtc_codes import (
+    LOW_FUEL,
+    ENGINE_OVERHEAT,
+)
 
 
 class EngineECU(ECU):
 
     def __init__(self):
         super().__init__("Engine ECU")
-
-        self.speed = 0
-        self.rpm = 800
 
     def simulate_drive(self):
 
@@ -19,8 +29,21 @@ class EngineECU(ECU):
 
             rpm = 800 + speed * 25
 
+            # Update shared vehicle state
+            vehicle.speed = speed
+            vehicle.rpm = rpm
+
+            vehicle.fuel -= 2
+            vehicle.engine_temperature += 3
+
+            if vehicle.fuel <= 15:
+                dtc_manager.add(LOW_FUEL)
+
+            if vehicle.engine_temperature >= 120:
+                dtc_manager.add(ENGINE_OVERHEAT)
+
             frame = CANFrame(
-                can_id= ENGINE_STATUS,
+                can_id=ENGINE_STATUS,
                 sender=self.name,
                 data=[speed, rpm // 100]
             )
@@ -28,16 +51,26 @@ class EngineECU(ECU):
             self.send(frame)
 
             time.sleep(1)
-
-            print("\n========== Simulation Complete ==========")
 
         # Decelerate
         for speed in range(80, -1, -20):
 
             rpm = 800 + speed * 25
 
+            vehicle.speed = speed
+            vehicle.rpm = rpm
+
+            vehicle.fuel -= 2
+            vehicle.engine_temperature += 3
+
+            if vehicle.fuel <= 15:
+                dtc_manager.add(LOW_FUEL)
+
+            if vehicle.engine_temperature >= 120:
+                dtc_manager.add(ENGINE_OVERHEAT)
+
             frame = CANFrame(
-                can_id=0x101,
+                can_id=ENGINE_STATUS,
                 sender=self.name,
                 data=[speed, rpm // 100]
             )
@@ -45,3 +78,5 @@ class EngineECU(ECU):
             self.send(frame)
 
             time.sleep(1)
+
+        print("\n========== Drive Cycle Complete ==========")

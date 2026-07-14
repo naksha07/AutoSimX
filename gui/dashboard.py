@@ -20,6 +20,7 @@ from datetime import datetime
 from models.global_state import vehicle
 from models.ecu_status import ecu_status
 from models.can_history import history
+from models.dtc_manager import dtc_manager
 
 from communication.can_frame import CANFrame
 from communication.message_ids import (
@@ -103,6 +104,22 @@ class Dashboard(QWidget):
         ecu_box.setLayout(ecu_layout)
 
         # ==========================================================
+        # Diagnostic Trouble Codes
+        # ==========================================================
+
+        dtc_box = QGroupBox("Diagnostic Trouble Codes")
+
+        dtc_layout = QVBoxLayout()
+
+        self.dtc_log = QTextEdit()
+
+        self.dtc_log.setReadOnly(True)
+
+        dtc_layout.addWidget(self.dtc_log)
+
+        dtc_box.setLayout(dtc_layout)
+
+        # ==========================================================
         # CAN Monitor
         # ==========================================================
 
@@ -163,6 +180,7 @@ class Dashboard(QWidget):
 
         layout.addWidget(vehicle_box)
         layout.addWidget(ecu_box)
+        layout.addWidget(dtc_box)
         layout.addWidget(can_box)
         layout.addWidget(self.log)
         layout.addLayout(buttons)
@@ -233,6 +251,30 @@ class Dashboard(QWidget):
 
             elif ecu == "Gateway ECU":
                 self.gateway_led.setText(state)
+
+    # ==============================================================
+    # DTC Update
+    # ==============================================================
+
+    def update_dtc(self):
+
+        self.dtc_log.clear()
+
+        dtcs = dtc_manager.get()
+
+        if not dtcs:
+
+            self.dtc_log.append("No Active DTC")
+
+            return
+
+        for dtc in dtcs:
+
+            self.dtc_log.append(
+
+                f"{dtc['code']} : {dtc['description']}"
+
+            )
 
     # ==============================================================
     # CAN Monitor
@@ -307,4 +349,5 @@ class Dashboard(QWidget):
         )
 
         self.update_ecu_health()
+        self.update_dtc()
         self.update_can_table()

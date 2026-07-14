@@ -34,6 +34,11 @@ from communication.message_ids import (
     HAZARD,
 )
 
+from diagnostics.dtc_codes import (
+    ENGINE_OVERHEAT,
+    LOW_FUEL,
+)
+
 class Dashboard(QWidget):
 
     def __init__(self):
@@ -117,6 +122,22 @@ class Dashboard(QWidget):
 
         dtc_layout.addWidget(self.dtc_log)
 
+        self.check_engine = QLabel("🟢 No Fault")
+
+        clear_button = QPushButton("Clear DTC")
+
+        inject_overheat = QPushButton("Inject Overheat")
+
+        inject_lowfuel = QPushButton("Inject Low Fuel")
+
+        dtc_layout.addWidget(self.check_engine)
+
+        dtc_layout.addWidget(clear_button)
+
+        dtc_layout.addWidget(inject_overheat)
+
+        dtc_layout.addWidget(inject_lowfuel)
+
         dtc_box.setLayout(dtc_layout)
 
         # ==========================================================
@@ -199,6 +220,16 @@ class Dashboard(QWidget):
             lambda: self.send_command(UNLOCK_DOORS)
         )
 
+        clear_button.clicked.connect(self.clear_dtcs)
+
+        inject_overheat.clicked.connect(
+            lambda: dtc_manager.add(ENGINE_OVERHEAT)
+        )
+
+        inject_lowfuel.clicked.connect(
+            lambda: dtc_manager.add(LOW_FUEL)
+        )
+
         # ==========================================================
         # Timer
         # ==========================================================
@@ -264,17 +295,29 @@ class Dashboard(QWidget):
 
         if not dtcs:
 
+            self.check_engine.setText("🟢 No Fault")
+
             self.dtc_log.append("No Active DTC")
 
             return
+
+        self.check_engine.setText("🔴 CHECK ENGINE")
 
         for dtc in dtcs:
 
             self.dtc_log.append(
 
-                f"{dtc['code']} : {dtc['description']}"
-
+                f"[{dtc['time'].strftime('%H:%M:%S')}] "
+                f"{dtc['code']} - {dtc['description']}" 
             )
+
+    # ==============================================================
+    # Clear DTCs
+    # ==============================================================
+
+    def clear_dtcs(self):
+
+        dtc_manager.clear()
 
     # ==============================================================
     # CAN Monitor

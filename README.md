@@ -272,8 +272,6 @@ Implemented Components
 
 # 📷 Screenshots
 
-Add screenshots inside
-
 ```
 
 docs/
@@ -319,14 +317,6 @@ This project is licensed under the MIT License.
 Nakshathraa N B
 
 B.E. Electronics and Communication Engineering
-
-Specialization:
-- Automotive Software
-- Embedded Systems
-- CAN Communication
-- AUTOSAR
-- Python Development
-
 ---
 
 # ⭐ If you like this project

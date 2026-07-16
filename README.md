@@ -317,6 +317,7 @@ This project is licensed under the MIT License.
 Nakshathraa N B
 
 B.E. Electronics and Communication Engineering
+
 ---
 
 # ⭐ If you like this project
